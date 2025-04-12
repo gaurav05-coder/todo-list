@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 function App() {
   const [todo, setTodo] = useState("")
   const [todos, setTodos] = useState([])
+  const [showFinished, setshowFinished] = useState(true)
   useEffect(() => {
     let todoString=localStorage.getItem("todos")
     if(todoString){
@@ -15,6 +16,9 @@ function App() {
   
   const saveToLS=(params) => {
     localStorage.setItem("todos",JSON.stringify(todos))
+  }
+  const toggleFinished=(e) => {
+    setshowFinished(!showFinished)
   }
   
   const handleEdit = (e,id) => {
@@ -62,17 +66,18 @@ function App() {
         <div className="addTodo my-5">
           <h2 className='text-lg font-bold'>Add a Todo</h2>
           <input onChange={handleChange} value={todo} type="text" className='bg-white w-80' />
-          <button onClick={handleAdd} className='bg-violet-800 hover:bg-violet-950 p-2 py-1 text-sm font-bold text-white rounded-md mx-6'>Save</button>
+          <button onClick={handleAdd} disabled={todo.length<=3} className='bg-violet-800 disabled:bg-violet-400 hover:bg-violet-950 p-2 py-1 text-sm font-bold text-white rounded-md mx-6'>Save</button>
         </div>
+        <input onChange={toggleFinished} type="checkbox" checked={showFinished} />Show Finished
         <h2 className='text-lg font-bold'>Your Todos</h2>
         <div className="todos">
         {todos.length === 0 && <div className='m-5'>No todo</div>}
           {todos.map(item=>{
 
           
-          return <div key={item.id} className="todo flex w-1/2 justify-between my-3">
+          return(showFinished || !item.isCompleted) && <div key={item.id} className="todo flex w-1/2 justify-between my-3">
             <div className='flex gap-5'>
-            <input name={item.id} onChange={handleCheckbox} type="checkbox" value={item.isCompleted} id="" />
+            <input name={item.id} onChange={handleCheckbox} type="checkbox" checked={item.isCompleted} id="" />
             <div className={item.isCompleted?"line-through":""}>{item.todo}</div>
             </div>
             <div className="buttons flex h-full">
